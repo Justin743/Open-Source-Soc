@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra
+    environment:
+      - MAX_HEAP_SIZE=1G
+      - HEAP_NEWSIZE=256M
+      - CASSANDRA_CLUSTER_NAME=thp
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.13
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+
+  cortex:
+    image: thehiveproject/cortex:3.1.7
+    container_name: cortex
+    depends_on:
+      - elasticsearch
+    environment:
+      - job_directory=/tmp/cortex-jobs
+      - analyzer_urls=https://catalogs.download.strangebee.com/latest/json/analyzers.json
+      - responder_urls=https://catalogs.download.strangebee.com/latest/json/responders.json
+    volumes:
+      - cortex_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/cortex-jobs:/tmp/cortex-jobs
+      - ./cortex-config/application.conf:/etc/cortex/application.conf
+    ports:
+      - "9001:9001"
+    restart: unless-stopped
+
+  thehive:
+    image: strangebee/thehive:5.2
+    container_name: thehive
+    depends_on:
+      - cassandra
+      - elasticsearch
+      - cortex
+    environment:
+      - JVM_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - thehive_data:/opt/thp/thehive/files
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+
+volumes:
+  cassandra_data:
+  es_data:
+  cortex_data:
+  thehive_data:
