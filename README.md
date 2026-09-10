@@ -56,4 +56,37 @@ A real, end-to-end walkthrough: an automated SSH brute-force launched from the i
 **6. Investigation and resolution** — The case fully documented and closed: root cause identified, evidence (the raw PAM log entry) attached, resolved as a confirmed True Positive with no impact. Note `Created by: wazuh-integration` — this entire case was opened automatically, not by a human analyst.
 ![Resolved case in TheHive](screenshots/06-case-resolution.png)
 
+## Tech stack
+
+| Component | Role |
+|---|---|
+| VMware Workstation Pro | Hypervisor hosting all lab VMs |
+| pfSense (CE) | Firewall, router, network segmentation |
+| Suricata | Network intrusion detection (signature + custom threshold rules) |
+| Wazuh (Indexer, Manager, Dashboard) | SIEM — log collection, correlation, alerting |
+| Kali Linux | Attacker VM — Nmap, Hydra, used to generate real attack traffic |
+| TheHive + Cortex (Docker) | Case management and observable enrichment |
+| Docker / Docker Compose | Containerized deployment for TheHive + Cortex |
+| Python | Custom Wazuh → TheHive integration script |
+
+## Repository contents
+
+```
+├── README.md                        this file
+├── docs/
+│   └── SOC_Lab_Build_Guide.docx  full step-by-step build guide (see below)
+├── screenshots/
+├── suricata/
+│   └── custom.rules                  
+├── wazuh/
+│   ├── ossec-integration-block.xml   the <integration> block wiring Wazuh to TheHive
+│   └── custom-w2thive.py             Wazuh → TheHive alert-forwarding script
+└── thehive-cortex/
+    └── docker-compose.yml            the full TheHive + Cortex Docker stack
+```
+
+## Want to build your own?
+
+This repository includes a `/docs` folder which includes a complete and detailed build guide. This guide covers each stage of the project, invluding the network setup, component installation, troubleshooting and a service-managment command refrence. It was created to be followed by somone who wishes to replicate this exact stack.
+
 
