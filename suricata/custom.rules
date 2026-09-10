@@ -1,0 +1,1 @@
+alert tcp any any -> $HOME_NET any (msg:"LOCAL Possible TCP Port Scan Detected"; flags:S; threshold: type threshold, track by_src, count 20, seconds 5; classtype:attempted-recon; sid:9000001; rev:1;)
