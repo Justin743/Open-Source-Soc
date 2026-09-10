@@ -20,7 +20,8 @@ Everything in this lab was built and debugged manually — every install issue, 
 
 ## Architecture
 
-(screenshots/07-network-arch.png)
+![Network architecture diagram](screenshots/07-network-arch.png)
+
 
 All attack traffic from Kali must physically cross through pfSense to reach anything on the victim segment — this is what gives Suricata and Wazuh visibility into it, rather than the two segments talking directly on a flat network.
 
